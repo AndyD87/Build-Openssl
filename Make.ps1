@@ -17,6 +17,30 @@
     [string]$OverrideOutput
 )
 
+Function NumberOpenSslVersion
+{
+    PARAM(
+        [string]$Version
+    )
+    $sLastChar = $Version.Substring($Version.Length - 1, 1);
+    $sVersion = $Version.Substring(0, $Version.Length - 1);
+    switch($sLastChar)
+    {
+        "a" { $sVersion += ".0"; break; }
+        "b" { $sVersion += ".1"; break; }
+        "c" { $sVersion += ".2"; break; }
+        "d" { $sVersion += ".3"; break; }
+        "e" { $sVersion += ".4"; break; }
+        "f" { $sVersion += ".5"; break; }
+        "g" { $sVersion += ".6"; break; }
+        "h" { $sVersion += ".7"; break; }
+        "i" { $sVersion += ".8"; break; }
+        "j" { $sVersion += ".9"; break; }
+        default { $sVersion = $Version}
+    }
+    return $sVersion
+}
+
 Function OpenSslVersionFromNumber
 {
     PARAM(
@@ -26,23 +50,23 @@ Function OpenSslVersionFromNumber
     $sVersion = $oVersion.Major + "." + $oVersion.Minor + "." + $oVersion.MajorRevision
     swith($oVersion.MinorRevision)
     {
-        0: {$sVersion += "a"}
-        1: {$sVersion += "b"}
-        2: {$sVersion += "c"}
-        3: {$sVersion += "d"}
-        4: {$sVersion += "e"}
-        5: {$sVersion += "f"}
-        6: {$sVersion += "g"}
-        7: {$sVersion += "h"}
-        8: {$sVersion += "i"}
-        9: {$sVersion += "j"}
+        0: {$sVersion += "a"; break}
+        1: {$sVersion += "b"; break}
+        2: {$sVersion += "c"; break}
+        3: {$sVersion += "d"; break}
+        4: {$sVersion += "e"; break}
+        5: {$sVersion += "f"; break}
+        6: {$sVersion += "g"; break}
+        7: {$sVersion += "h"; break}
+        8: {$sVersion += "i"; break}
+        9: {$sVersion += "j"; break}
     }
 }
-
+$Version = NumberOpenSslVersion $Version
 $CurrentDir     = (Get-Item -Path ".\" -Verbose).FullName
 $OutputName     = "openssl-$Version-${VisualStudio}-${Architecture}"
-$OpensslDir     = "openssl-$PSScriptRoot\$Version"
-if([string]::IsNullOrEmpty($OutputOverride))
+$OpensslDir     = "$PSScriptRoot\openssl-$Version"
+if([string]::IsNullOrEmpty($OverrideOutput))
 {
     $Output         = "$CurrentDir\$OutputName"
     if($Static)

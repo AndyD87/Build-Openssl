@@ -18,7 +18,7 @@ $CurrentDir     = (Get-Item -Path ".\" -Verbose).FullName
 
 cd $OpensslDir
 
-$Cmd = "perl.exe Configure debug-VC-WIN64A --prefix=`"$OutputTarget`" --openssldir=`"$OutputTarget`""
+$Cmd = "perl.exe Configure debug-VC-WIN64A --prefix=`"$OutputTarget`" --openssldir=`"$OutputTarget/var/openssl`""
 cmd.exe /C $Cmd
 if($LASTEXITCODE -ne 0)
 {

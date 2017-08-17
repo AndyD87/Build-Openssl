@@ -12,8 +12,8 @@
     [Parameter(Mandatory=$false, Position=6)]
     [string]$AdditionalConfig = "",
 
-    [switch]$DoPackage,
-    [switch]$NoClean,
+    [bool]$DoPackage,
+    [bool]$NoClean,
     [string]$OverrideOutput
 )
 

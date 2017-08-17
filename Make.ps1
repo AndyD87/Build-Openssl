@@ -62,10 +62,13 @@ Function OpenSslVersionFromNumber
         9: {$sVersion += "j"; break}
     }
 }
+
+$ExitCode       = 0
 $Version = NumberOpenSslVersion $Version
 $CurrentDir     = (Get-Item -Path ".\" -Verbose).FullName
 $OutputName     = "openssl-$Version-${VisualStudio}-${Architecture}"
 $OpensslDir     = "$PSScriptRoot\openssl-$Version"
+
 if([string]::IsNullOrEmpty($OverrideOutput))
 {
     $Output         = "$CurrentDir\$OutputName"
@@ -109,6 +112,8 @@ Try
 }
 Catch
 {
+    $ExitCode       = 1
+    Write-Output $_.Exception.Message
     Add-Content "$CurrentDir\Build.log" "Failed: $OutputName"
 }
 Finally
@@ -117,3 +122,5 @@ Finally
     # Always Endup visual studio
     .\Common\VisualStudio-PostBuild.ps1
 }
+
+return $ExitCode

@@ -19,8 +19,21 @@ Perl-GetEnv -Mandatory
 
 cd $OpensslDir
 
+
+Write-Output "******************************"
+Write-Output "* Start Configuration"
+Write-Output "******************************"
 Process-StartInlineAndThrow "perl.exe" "Configure debug-VC-WIN64A --prefix=`"$OutputTarget`" --openssldir=`"$OutputTarget/var/openssl`""
+Process-StartInlineAndThrow ".\configure" "$Config"
+
+Write-Output "******************************"
+Write-Output "* Start Build"
+Write-Output "******************************"
 Process-StartInlineAndThrow "nmake"
+
+Write-Output "******************************"
+Write-Output "* Start Install"
+Write-Output "******************************"
 Process-StartInlineAndThrow "nmake" "install"
 
 cd $CurrentDir

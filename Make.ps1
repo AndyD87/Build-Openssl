@@ -16,7 +16,12 @@ PARAM(
     [bool]$NoClean,
     [string]$OverrideOutput
 )
+# Include Common Powershell modules
 Import-Module "$PSScriptRoot\Common\All.ps1" -Force
+
+Write-Output "******************************"
+Write-Output "* Start OpenSSL Build"
+Write-Output "******************************"
 
 Function NumberOpenSslVersion
 {
@@ -97,12 +102,19 @@ Try
 {
     if(-not (Test-Path $OpensslDir))
     {
+        Write-Output "* Download Openssl $Version"
         .\Openssl-Get.ps1 -Version $Version -Target $OpensslDir
     }
     elseif(-not $NoClean)
     {
+        Write-Output "* Cleanup OpenSSL"
         .\Openssl-Clean.ps1 $OpensslDir
     }
+    else
+    {
+        Write-Output "* NoClean"
+    }
+    Write-Output "******************************"
     VisualStudio-GetEnv $VisualStudio $Architecture
     .\Openssl-Build.ps1 $OpensslDir $Output $Static $DebugBuild $AdditionalConfig
     if($DoPackage)

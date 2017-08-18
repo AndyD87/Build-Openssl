@@ -16,7 +16,7 @@ If something goes wrong feel free to debug with *Powershell ISE* or write a Mess
 
 ## How to build
 
-For example, to build the Version 59.1, execute the following command:
+For example, to build the Version 1.1.0e, execute the following command:
 
     .\Make.ps1 -VisualStudio 2017 -Architecture x64 -Version 1.1.0e
     

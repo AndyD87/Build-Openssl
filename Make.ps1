@@ -99,7 +99,7 @@ Try
     {
         .\Openssl-Get.ps1 -Version $Version -Target $OpensslDir
     }
-    else
+    elseif(-not $NoClean)
     {
         .\Openssl-Clean.ps1 $OpensslDir
     }

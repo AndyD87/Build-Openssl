@@ -30,11 +30,10 @@ Function OpenSslVersionToTag
 }
 
 $CurrentDir = ((Get-Item -Path ".\" -Verbose).FullName)
+
 $Tag = OpenSslVersionToTag $Version
 
-$cmd = "git clone --branch $Tag  https://github.com/openssl/openssl.git `"$Target`""
-cmd.exe /C $cmd
-if($LASTEXITCODE -ne 0)
+if((Process-StartInline "git" "clone --branch $Tag  https://github.com/openssl/openssl.git `"$Target`"") -ne 0)
 {
     throw "Cloning Openssl failed: $cmd"
 }

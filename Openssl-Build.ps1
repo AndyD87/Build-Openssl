@@ -10,30 +10,17 @@ PARAM(
     [Parameter(Mandatory=$false, Position=5)]
     [string]$AdditionalConfig = ""
 )
+Import-Module "$PSScriptRoot\Common\All.ps1" -Force
 
 $CurrentDir     = (Get-Item -Path ".\" -Verbose).FullName
 
-.\Common\Nasm-GetEnv.ps1 -Mandatory
-.\Common\Perl-GetEnv.ps1 -Mandatory
+Nasm-GetEnv -Mandatory
+Perl-GetEnv -Mandatory
 
 cd $OpensslDir
 
-$Cmd = "perl.exe Configure debug-VC-WIN64A --prefix=`"$OutputTarget`" --openssldir=`"$OutputTarget/var/openssl`""
-cmd.exe /C $Cmd
-if($LASTEXITCODE -ne 0)
-{
-    throw "Configure failed: $Cmd"
-}
-
-nmake
-if($LASTEXITCODE -ne 0)
-{
-    throw "Failed: nmake"
-}
-nmake install
-if($LASTEXITCODE -ne 0)
-{
-    throw "Failed: nmake install"
-}
+Process-StartInlineAndThrow "perl.exe" "Configure debug-VC-WIN64A --prefix=`"$OutputTarget`" --openssldir=`"$OutputTarget/var/openssl`""
+Process-StartInlineAndThrow "nmake"
+Process-StartInlineAndThrow "nmake" "install"
 
 cd $CurrentDir

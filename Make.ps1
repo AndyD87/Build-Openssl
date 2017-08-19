@@ -71,6 +71,11 @@ Function OpenSslVersionFromNumber
 
 $ExitCode       = 0
 $Version = NumberOpenSslVersion $Version
+
+$Global:VSOpensslVersion = $Version
+$Global:VSVersion = $VisualStudio
+$Global:VSArch    = $Architecture
+
 $CurrentDir     = (Get-Item -Path ".\" -Verbose).FullName
 $OutputName     = "openssl-$Version-${VisualStudio}-${Architecture}"
 $OpensslDir     = "$PSScriptRoot\openssl-$Version"
@@ -100,21 +105,25 @@ cd $PSScriptRoot
 
 Try
 {
+    Write-Output "******************************"
     if(-not (Test-Path $OpensslDir))
     {
         Write-Output "* Download Openssl $Version"
+        Write-Output "******************************"
         .\Openssl-Get.ps1 -Version $Version -Target $OpensslDir
     }
     elseif(-not $NoClean)
     {
         Write-Output "* Cleanup OpenSSL"
+        Write-Output "******************************"
         .\Openssl-Clean.ps1 $OpensslDir
     }
     else
     {
         Write-Output "* NoClean"
+        Write-Output "******************************"
     }
-    Write-Output "******************************"
+    
     VisualStudio-GetEnv $VisualStudio $Architecture
     .\Openssl-Build.ps1 $OpensslDir $Output $Static $DebugBuild $AdditionalConfig
     if($DoPackage)

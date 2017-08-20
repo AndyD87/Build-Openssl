@@ -9,10 +9,16 @@ If something goes wrong feel free to debug with *Powershell ISE* or write a Mess
 
 ## Requirements
 
- - Visual Studio
- - Cmake (for creating zip)
- - Perl
+Mandatory Requirements:
+ - Git
+ - Visual Studio 2012/2013/2015/2017
+ - Cmake (for working with Zip-Files)
+
+Recommended Requirements:
+ - Perl 2.7
+    Common Scripts will download a Portable Version of StrawberryPerl if not available
  - NASM
+    Common Scripts will download a Portable Version of NASM if not available
 
 ## How to build
 

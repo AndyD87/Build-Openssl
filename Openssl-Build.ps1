@@ -56,6 +56,12 @@ if($VTarget.Major -lt 1 -or ($VTarget.Major -eq 1 -and $VTarget.Minor -eq 0))
 {
     $VSVersion =  New-Object System.Version($Global:VSVersion + ".0")
 
+    $Makefile = "ms\ntdll.mak"
+    if($Static)
+    {
+        $Makefile = "ms\nt.mak"
+    }
+
     Write-Output "******************************"
     Write-Output "* Start Configuration"
     Write-Output "******************************"
@@ -69,12 +75,14 @@ if($VTarget.Major -lt 1 -or ($VTarget.Major -eq 1 -and $VTarget.Minor -eq 0))
     if($VSVersion.Major -gt 2013)
     {
         (Get-Content e_os.h) |  Foreach-Object {$_ -Replace '#      if _MSC_VER>=1300','#      if _MSC_VER >= 1300 && _MSC_VER <= 1800'}  | Out-File e_os.h
-    }
 
-    $Makefile = "ms\ntdll.mak"
-    if($Static)
-    {
-        $Makefile = "ms\nt.mak"
+        # default warning is treated as error (-WX) but Microsoft increases sometimes very worhtless warnings
+        # to avoid stopping build, wie pass warnings.
+        # Look at INSTALL.W32 within openssl sources for more information
+        if($Global:VSArch -eq "x86")
+        {
+            (Get-Content $Makefile) |  Foreach-Object {$_ -Replace '-WX',''}  | Out-File $Makefile
+        }
     }
 
     Write-Output "******************************"

@@ -15,9 +15,9 @@ Mandatory Requirements:
  - Cmake (for working with Zip-Files)
 
 Recommended Requirements:
- - Perl 2.7
+ - Perl 2.7  
     Common Scripts will download a Portable Version of StrawberryPerl if not available
- - NASM
+ - NASM  
     Common Scripts will download a Portable Version of NASM if not available
 
 ## How to build

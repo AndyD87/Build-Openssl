@@ -31,7 +31,8 @@ Options (bold are mandatory):
  - **Architectrue**: x64/x86
  - **Version**: Version of OpenSSL
  - Static: $true/$false (default: $false)
- - Debug: $true/$false (default: $false)
+ - DebugBuild: $true/$false (default: $false)
+ - StaticRuntime: $true/$false (default: $false)
  - DoPackage: $true/$false (default: $false) for creating zip of output
  - AdditionalConfig: String to append on configure command (default: "")
  

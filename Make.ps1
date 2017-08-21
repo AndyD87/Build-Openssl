@@ -10,6 +10,8 @@ PARAM(
     [Parameter(Mandatory=$false, Position=5)]
     [bool]$DebugBuild = $false,
     [Parameter(Mandatory=$false, Position=6)]
+    [bool]$StaticRuntime = $false,
+    [Parameter(Mandatory=$false, Position=7)]
     [string]$AdditionalConfig = "",
 
     [bool]$DoPackage,
@@ -94,6 +96,12 @@ if([string]::IsNullOrEmpty($OverrideOutput))
         $Output += "_debug"
         $OutputName += "_debug"
     }
+
+    if($StaticRuntime)
+    {
+        $Output += "_MT"
+        $OutputName += "_MT"
+    }
 }
 else
 {
@@ -125,7 +133,7 @@ Try
     }
     
     VisualStudio-GetEnv $VisualStudio $Architecture
-    .\Openssl-Build.ps1 $OpensslDir $Output $Static $DebugBuild $AdditionalConfig
+    .\Openssl-Build.ps1 $OpensslDir $Output $Static $DebugBuild -StaticRuntime $StaticRuntime -AdditionalConfig $AdditionalConfig
     if($DoPackage)
     {
         Compress-Zip -OutputFile "$CurrentDir\$OutputName.zip" -Single $Output

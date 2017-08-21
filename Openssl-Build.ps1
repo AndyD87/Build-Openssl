@@ -8,6 +8,8 @@ PARAM(
     [Parameter(Mandatory=$false, Position=4)]
     [bool]$DebugBuild = $false,
     [Parameter(Mandatory=$false, Position=5)]
+    [bool]$StaticRuntime = $false,
+    [Parameter(Mandatory=$false, Position=6)]
     [string]$AdditionalConfig = ""
 )
 Import-Module "$PSScriptRoot\Common\All.ps1" -Force
@@ -33,8 +35,8 @@ switch($Global:VSArch)
     }
     "x86" 
     {
-        if($DebugBuild) { $VSConfig = "debug-VC-WIN32"; $VSDoScript = "ms\do_win64a"}
-        else                       { $VSConfig = "VC-WIN32"; $VSDoScript = "ms\do_win64a"}
+        if($DebugBuild) { $VSConfig = "debug-VC-WIN32"; $VSDoScript = "ms\do_nasm"}
+        else                       { $VSConfig = "VC-WIN32"; $VSDoScript = "ms\do_nasm"}
         break;
     }
     default
@@ -67,25 +69,38 @@ if($VTarget.Major -lt 1 -or ($VTarget.Major -eq 1 -and $VTarget.Minor -eq 0))
     if($VSVersion.Major -gt 2013)
     {
         (Get-Content e_os.h) |  Foreach-Object {$_ -Replace '#      if _MSC_VER>=1300','#      if _MSC_VER >= 1300 && _MSC_VER <= 1800'}  | Out-File e_os.h
-        #(Get-Content ms\nt.mak) |  Foreach-Object {$_ -Replace 'LFLAGS=','LFLAGS=legacy_stdio_definitions.lib '}  | Out-File ms\nt.mak
+    }
+
+    $Makefile = "ms\ntdll.mak"
+    if($Static)
+    {
+        $Makefile = "ms\nt.mak"
     }
 
     Write-Output "******************************"
     Write-Output "* Start Build"
     Write-Output "******************************"
-    Process-StartInlineAndThrow "nmake" "-f ms\nt.mak"
+    nmake -f $Makefile
+    if($LASTEXITCODE -ne 0)
+    {
+        throw("Failed: nmake -f $Makefile")
+    }
 
     Write-Output "******************************"
     Write-Output "* Start Install"
     Write-Output "******************************"
-    Process-StartInlineAndThrow "nmake" "-f ms\nt.mak install"
+    nmake -f $Makefile install
+    if($LASTEXITCODE -ne 0)
+    {
+        throw("Failed: nmake -f $Makefile install")
+    }
 }
 else
 {
     Write-Output "******************************"
     Write-Output "* Start Configuration"
     Write-Output "******************************"
-    Process-StartInlineAndThrow "perl.exe" "Configure VC-WIN64A --prefix=`"$OutputTarget`" " #--openssldir=`"$OutputTarget/var/openssl`""
+    Process-StartInlineAndThrow "perl.exe" "Configure $VSConfig --prefix=`"$OutputTarget`" --openssldir=`"$OutputTarget/var/openssl`""
 
     Write-Output "******************************"
     Write-Output "* Start Build"

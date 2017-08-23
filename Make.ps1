@@ -97,35 +97,20 @@ Function OpenSslVersionFromNumber
 
 $ExitCode       = 0
 $Version = NumberOpenSslVersion $Version
-
 $Global:VSOpensslVersion = $Version
 $Global:VSVersion = $VisualStudio
 $Global:VSArch    = $Architecture
 
 $CurrentDir     = (Get-Item -Path ".\" -Verbose).FullName
-$OutputName     = "openssl-$Version-${VisualStudio}-${Architecture}"
-$OpensslDir     = "$PSScriptRoot\openssl-$Version"
+$OutputName     = "openssl-$Version"
+$Output         = "$CurrentDir\$OutputName"
+$OpensslDir      = "$PSScriptRoot\$OutputName"
 
 if([string]::IsNullOrEmpty($OverrideOutput))
 {
-    $Output         = "$CurrentDir\$OutputName"
-    if($Static)
-    {
-        $Output += "_static"
-        $OutputName += "_static"
-    }
-
-    if($DebugBuild)
-    {
-        $Output += "_debug"
-        $OutputName += "_debug"
-    }
-
-    if($StaticRuntime)
-    {
-        $Output += "_MT"
-        $OutputName += "_MT"
-    }
+    $VisualStudioPostFix = VisualStudio-GetPostFix -VisualStudio $VisualStudio -Architecture $Architecture -Static $Static -DebugBuild $DebugBuild -StaticRuntime $StaticRuntime
+    $OutputName += "-$VisualStudioPostFix"
+    $Output     =  "$CurrentDir\$OutputName"
 }
 else
 {
@@ -133,7 +118,6 @@ else
 }
 
 cd $PSScriptRoot
-
 
 Try
 {

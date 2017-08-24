@@ -144,7 +144,7 @@ Try
     .\Openssl-Build.ps1 $OpensslDir $Output $Static $DebugBuild -StaticRuntime $StaticRuntime -AdditionalConfig $AdditionalConfig
     if($DoPackage)
     {
-        Compress-Zip -OutputFile "$Output.zip" -Single $Output
+        Compress-Zip -OutputFile "$Output.7z" -Single $Output
     }
     Add-Content "$CurrentDir\Build.log" "Success: $OutputName"
 }

@@ -1,2 +1,4 @@
 openssl-*/
 Build.log
+*.7z
+*.zip

@@ -24,39 +24,51 @@
 ##
 Import-Module "$PSScriptRoot\Process.ps1" -Force
 
-$Global:PortablePerlName      = "StrawberryPerl"
-$Global:PortablePerlDownload  = "http://coolcow.de/projects/ThirdParty/StrawberryPerl/binaries/5.24.1.1/StrawberryPerl.32bit.portable.zip"
-$Global:PortablePerlBin       = "perl\bin"
+$Global:WinFlexBisonName      = "WinFlexBison"
+$Global:WinFlexBisonDownload  = "http://coolcow.de/projects/ThirdParty/binaries/2.5.5.0/win_flex_bison.zip"
 
-Function Perl-GetEnv
+Function WinFlexBison-GetEnv
 {
     PARAM(
         [Parameter(Mandatory=$False, Position=1)]
         [switch]$Mandatory
     )
 
-    if(Get-Command perl.exe -ErrorAction SilentlyContinue)
+    if(Get-Command win_flex.exe -ErrorAction SilentlyContinue)
     {
-        Write-Output "Perl already in PATH"
+        Write-Output "WinFlexBison already in PATH"
     }
-    elseif((Test-Path "C:\Tools\Perl\bin"))
+    elseif((Test-Path "C:\Tools\WinFlexBison"))
     {
-        $env:PATH += ";C:\Tools\Perl\bin"
-        Write-Output "Perl found at C:\Tools\Perl\bin"
-    }
-    elseif((Test-Path "C:\Tools\Perl\perl\bin"))
-    {
-        $env:PATH += ";C:\Tools\Perl\perl\bin"
-        Write-Output "Perl found at C:\Tools\Perl\perl\bin"
+        $env:PATH += ";C:\Tools\WinFlexBison\bin"
+        Write-Output "WinFlexBison found at C:\Tools\WinFlexBison"
     }
     elseif($Mandatory)
     {
-        Write-Output "Mandatory Perl not found, try to download portable Version"
+        Write-Output "Mandatory WinFlexBison not found, try to download portable Version"
         Import-Module "$PSScriptRoot\PortableApps.ps1" -Force
-        PortableApp-DownloadAndPath $Global:PortablePerlDownload $Global:PortablePerlName $Global:PortablePerlBin
+        $Path = PortableApp-DownloadAndPath $Global:WinFlexBisonDownload $Global:WinFlexBisonName -ReturnPath $true
+        if([string]::IsNullOrEmpty($Path) -eq $false)
+        {
+            $sFlex = "$Path\win_flex.exe"
+            if((Test-Path $sFlex) -eq $true)
+            {
+                if((Test-Path "$Path\flex.exe") -eq $false)
+                {
+                    Copy-Item "$Path\win_flex.exe" "$Path\flex.exe"
+                }
+            }
+            if((Test-Path "$Path\win_bison.exe") -eq $true)
+            {
+                if((Test-Path "$Path\bison.exe") -eq $false)
+                {
+                    Copy-Item "$Path\win_bison.exe" "$Path\bison.exe"
+                }
+            }
+        }
     }
     else
     {
-        Write-Output "No Perl found";
+        Write-Output "No WinFlexBison found";
     }
 }

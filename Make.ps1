@@ -161,4 +161,4 @@ Finally
     VisualStudio-PostBuild
 }
 
-return $ExitCode
+exit $ExitCode

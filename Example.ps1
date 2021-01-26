@@ -2,28 +2,67 @@
 # Example to build many different types of one Version
 ###############################################################################
 
-$Version       = "1.1.0.5"
-$VisualStudios = @("2019") # "2015", "2017",
+$Version       = "1.1.1.7"# 1.1.1g
+$VisualStudios = @("2015","2017", "2019") # 
 $Architectures = @("x64", "x86")
 $Static        = $false
-$StaticRuntime = $false
-$DebugToo      = $true
+$StaticRuntime = $true
 $DoPackage     = $true
 
 Set-Content "Build.log" ""
 
-foreach($VisualStudio in $VisualStudios)
+$global:oAllEnv = Get-ChildItem Env:
+
+function CleanupEnv
 {
-    foreach($Architecture in $Architectures)
+    $oCurrentEnv = Get-ChildItem Env:
+    foreach($oCurrent in $oCurrentEnv)
     {
-        .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $Static -StaticRuntime $StaticRuntime -DoPackage $DoPackage
-        if($LASTEXITCODE -eq 0)
+        $bFound = $false
+        foreach($oAll in $oCurrentEnv)
         {
-            Add-Content "Build.log" "Succeeded"
+            if($oAll.Name -eq $oCurrent.NAME)
+            {
+                $bFound = $true
+                break
+            }
+        }
+        if($bFound)
+        {
+            [System.Environment]::SetEnvironmentVariable($oAll.Name, $oAll.Value)
         }
         else
         {
-            Add-Content "Build.log" "Failed"
+            Remove-Item ("Env:\" + $oCurrent.Name)
         }
+    }
+}
+
+function VerifyLastExit()
+{
+    CleanupEnv
+    if($LASTEXITCODE -eq 0)
+    {
+        Add-Content "Build.log" "Succeeded"
+    }
+    else
+    {
+        Add-Content "Build.log" "Failed"
+        throw "Build failed"
+    }
+}
+
+foreach($VisualStudio in $VisualStudios)
+{
+    foreach($Architecture in $Architectures)
+    {   
+        .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $true -StaticRuntime $StaticRuntime -DoPackage $DoPackage -DebugBuild $false
+        VerifyLastExit
+        .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $true -StaticRuntime $StaticRuntime -DoPackage $DoPackage -DebugBuild $true
+        VerifyLastExit
+        .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $false -StaticRuntime $StaticRuntime -DoPackage $DoPackage -DebugBuild $false
+        VerifyLastExit
+        .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $false -StaticRuntime $StaticRuntime -DoPackage $DoPackage -DebugBuild $true
+        VerifyLastExit
     }
 }

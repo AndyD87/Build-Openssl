@@ -88,6 +88,29 @@ Function VisualStudio-GetEnv
     {
         switch($Version)
         {
+            "2022" 
+            {
+                if(Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat")
+                {
+                    Invoke-CmdScript "C:\Program Files (x86)\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" $Architecture
+                }
+                elseif (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat")
+                {
+                    Invoke-CmdScript "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" $Architecture
+                }
+                elseif (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat")
+                {
+                    Invoke-CmdScript "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $Architecture
+                }
+                else
+                {
+                    throw "Wether Community nor Professional nor Enterprise Edition of 2022 was found"
+                }
+                if($LASTEXITCODE -ne 0)
+                {
+                    throw "Failed on calling vcvarsall.bat"
+                }
+            }
             "2019" 
             {
                 if(Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvarsall.bat")
@@ -210,6 +233,7 @@ Function VisualStudio-YearToMsvcDefine
     $MSVC = "msvc"
     switch($VisualStudio)
     {
+        "2022" { $MSVC += "1930" }
         "2019" { $MSVC += "1920" }
         "2017" { $MSVC += "1910" }
         "2015" { $MSVC += "1900" }
@@ -222,6 +246,68 @@ Function VisualStudio-YearToMsvcDefine
         default { throw "Uknown Visual Studio Version" }
     }
     return $MSVC
+}
+
+Function VisualStudio-GetAvailable
+{
+    $aVisualStudios = @()
+    
+    if(Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2022";
+    }
+    elseif (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2022";
+    }
+    elseif (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2022";
+    }
+
+    
+    if(Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2019";
+    }
+    elseif (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2019";
+    }
+    elseif (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2019";
+    }
+
+    if(Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2017";
+    }
+    elseif (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2017";
+    }
+    elseif (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat")
+    {
+        $aVisualStudios += "2017";
+    }
+
+    if(Test-Path "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat")
+    {
+        $aVisualStudios += "2015";
+    }
+
+    if(Test-Path "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat")
+    {
+        $aVisualStudios += "2013";
+    }
+
+    if(Test-Path "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\vcvarsall.bat")
+    {
+        $aVisualStudios += "2012";
+    }
+
+    return $aVisualStudios
 }
 
 Function VisualStudio-GetPostFix

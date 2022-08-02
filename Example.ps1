@@ -3,7 +3,7 @@
 ###############################################################################
 
 $Version       = "1.1.1.7"# 1.1.1g
-$VisualStudios = @("2017", "2019", "2022") # 
+$VisualStudios = @("2019", "2022") # 
 $Architectures = @("x64", "x86")
 $Static        = $false
 $StaticRuntime = $true
@@ -56,13 +56,27 @@ foreach($VisualStudio in $VisualStudios)
 {
     foreach($Architecture in $Architectures)
     {   
+        Get-ChildItem env: | Export-CliXml ./env-vars.clixml
         .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $true -StaticRuntime $StaticRuntime -DoPackage $DoPackage -DebugBuild $false
         VerifyLastExit
+        foreach($var in (Get-Childitem -Path Env:*))
+        { Remove-Item Env:\$($var.Name) }
+        Import-CliXml ./env-vars.clixml | % { Set-Item "env:$($_.Name)" $_.Value }
         .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $true -StaticRuntime $StaticRuntime -DoPackage $DoPackage -DebugBuild $true
         VerifyLastExit
+        foreach($var in (Get-Childitem -Path Env:*))
+        { Remove-Item Env:\$($var.Name) }
+        Import-CliXml ./env-vars.clixml | % { Set-Item "env:$($_.Name)" $_.Value }
+        { Remove-Item Env:\$($var.Name) }
         .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $false -StaticRuntime $StaticRuntime -DoPackage $DoPackage -DebugBuild $false
         VerifyLastExit
+        foreach($var in (Get-Childitem -Path Env:*))
+        { Remove-Item Env:\$($var.Name) }
+        Import-CliXml ./env-vars.clixml | % { Set-Item "env:$($_.Name)" $_.Value }
         .\Make.ps1 -VisualStudio $VisualStudio -Version $Version -Architecture $Architecture -Static $false -StaticRuntime $StaticRuntime -DoPackage $DoPackage -DebugBuild $true
         VerifyLastExit
+        foreach($var in (Get-Childitem -Path Env:*))
+        { Remove-Item Env:\$($var.Name) }
+        Import-CliXml ./env-vars.clixml | % { Set-Item "env:$($_.Name)" $_.Value }
     }
 }

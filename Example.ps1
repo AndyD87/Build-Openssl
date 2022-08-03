@@ -2,8 +2,8 @@
 # Example to build many different types of one Version
 ###############################################################################
 
-$Version       = "1.1.1.7"# 1.1.1g
-$VisualStudios = @("2019", "2022") # 
+$Version       = "1.1.1.16"# 1.1.1q
+$VisualStudios = @("2017", "2019", "2022") # 
 $Architectures = @("x64", "x86")
 $Static        = $false
 $StaticRuntime = $true

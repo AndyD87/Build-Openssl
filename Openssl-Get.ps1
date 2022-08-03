@@ -36,7 +36,7 @@ Function OpenSslVersionToTag
         [string]$Version
     )
     $oVersion  = New-Object System.Version($Version)
-    $sVersion = "OpenSSL_" + $oVersion.Major + "_" + $oVersion.Minor + "_" + $oVersion.MajorRevision
+    $sVersion = "OpenSSL_" + $oVersion.Major + "_" + $oVersion.Minor + "_" + $oVersion.Build
     switch($oVersion.MinorRevision)
     {
         "0" {$sVersion += "a"; break}
@@ -49,6 +49,15 @@ Function OpenSslVersionToTag
         "7" {$sVersion += "h"; break}
         "8" {$sVersion += "i"; break}
         "9" {$sVersion += "j"; break}
+        "10" {$sVersion += "k"; break}
+        "11" {$sVersion += "l"; break}
+        "12" {$sVersion += "m"; break}
+        "13" {$sVersion += "n"; break}
+        "14" {$sVersion += "o"; break}
+        "15" {$sVersion += "p"; break}
+        "16" {$sVersion += "q"; break}
+        "17" {$sVersion += "r"; break}
+        "18" {$sVersion += "s"; break}
     }
     return $sVersion
 }
